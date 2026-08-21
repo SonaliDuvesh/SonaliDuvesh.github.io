@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Sonali OS — Interactive Portfolio</title>
+    <!-- Tailwind CSS with Forms and Container Queries -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Be Vietnam Pro & Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            aubergine: '#772953',
+                            orange: '#E95420',
+                            charcoal: '#2D2D2D',
+                            shellBlack: '#111111',
+                            canvasGray: '#F7F7F7',
+                        },
+                        surface: "#f9f9f9",
+                        primary: "#5b113c",
+                        "primary-container": "#772953",
+                        "secondary-container": "#ff632f",
+                        "on-primary-container": "#f995c4",
+                        "on-surface": "#1a1c1c",
+                        "on-surface-variant": "#524249",
+                        "outline-variant": "#d7c1c8",
+                        "surface-variant": "#e2e2e2",
+                        "surface-container-highest": "#e2e2e2",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        "2xl": "1rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        gutter: "16px",
+                        "header-height": "48px",
+                        "sidebar-width": "240px",
+                        "margin-desktop": "24px",
+                        "margin-mobile": "16px",
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="text-on-surface w-screen h-screen relative select-none">
+
+    <!-- ==================== LOCK SCREEN OVERLAY ==================== -->
+    <div id="lock-screen"
+        class="fixed inset-0 z-[200] bg-gradient-to-br from-[#772953] to-[#E95420] flex flex-col justify-between items-center transition-opacity duration-700">
+        <!-- Top bar of Lock screen -->
+        <header
+            class="w-full h-12 flex justify-between items-center px-6 text-white font-semibold text-sm bg-black/10 select-none">
+            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">lock</span> Sonali
+                OS</span>
+            <div class="flex items-center gap-4">
+                <span class="material-symbols-outlined text-lg">wifi</span>
+                <span class="material-symbols-outlined text-lg">battery_full</span>
+            </div>
+        </header>
+
+        <!-- Main Card Area -->
+        <div class="flex-1 flex flex-col items-center justify-center">
+            <!-- Time & Date -->
+            <div class="mb-10 text-center select-none">
+                <h1 id="lock-clock" class="text-7xl md:text-8xl font-bold text-white drop-shadow-md tracking-tight">
+                    10:42</h1>
+                <p id="lock-date" class="text-lg md:text-xl text-white/90 drop-shadow-sm mt-2">Thursday, October 26</p>
+            </div>
+
+            <!-- Login Card -->
+            <div class="glass-panel rounded-2xl p-8 flex flex-col items-center w-80 max-w-sm">
+                <!-- Avatar -->
+                <div class="w-20 h-20 rounded-full overflow-hidden mb-4 border-2 border-white/30 shadow-lg select-none">
+                    <img alt="Avatar" class="w-full h-full object-cover"
+                        src="http://sdk.bitmoji.com/render/panel/10226021-106544195541_1-s5-v1.png?transparent=1&palette=1&scale=1" />
+                </div>
+                <!-- User Name -->
+                <h2 class="text-xl text-white font-semibold mb-6">Sonali Duvesh</h2>
+
+                <!-- Password Field -->
+                <form id="login-form" class="w-full relative" onsubmit="unlockOS(event)">
+                    <input autofocus id="password-input"
+                        class="w-full bg-white/20 border border-white/20 rounded-lg py-2.5 pl-4 pr-12 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent transition duration-200 text-sm shadow-inner"
+                        placeholder="Password (Any password works)" type="password" />
+                    <button
+                        class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-brand-orange hover:bg-brand-orange/80 flex items-center justify-center transition-colors shadow"
+                        type="submit">
+                        <span class="material-symbols-outlined text-white text-sm">arrow_forward</span>
+                    </button>
+                </form>
+
+                <!-- Loading Dots (Initially Hidden) -->
+                <div id="loading-indicator" class="hidden mt-6 flex gap-1.5 h-6 items-center">
+                    <div class="w-2.5 h-2.5 bg-white rounded-full dot shadow"></div>
+                    <div class="w-2.5 h-2.5 bg-white rounded-full dot shadow"></div>
+                    <div class="w-2.5 h-2.5 bg-white rounded-full dot shadow"></div>
+                </div>
+            </div>
+
+            <button onclick="unlockOS(null)"
+                class="mt-6 text-white/60 hover:text-white/90 text-sm transition-colors hover:bg-white/5 px-4 py-2 rounded-full">
+                Skip to Desktop
+            </button>
+        </div>
+
+        <footer class="w-full py-4 text-center text-xs text-white/40 select-none">
+            Ubuntu Convergence Project Portfolio
+        </footer>
+    </div>
+
+    <!-- ==================== DESKTOP WORKSPACE ==================== -->
+    <div class="w-full h-full flex flex-col relative z-0">
+        <!-- Wallpaper image layer -->
+        <div class="absolute inset-0 z-[-1] bg-cover bg-center select-none"
+            style="background-image: url('wallpaper.jpg')"></div>
+
+        <!-- 1. Top Bar -->
+        <header
+            class="glass-topbar w-full h-[48px] px-4 flex justify-between items-center text-white text-[15px] font-semibold select-none z-30 fixed top-0 left-0">
+            <div class="flex items-center gap-4">
+                <button class="flex items-center gap-1.5 px-3 py-1 rounded hover:bg-white/10 transition duration-150">
+                    <span class="material-symbols-outlined text-[18px]">grid_view</span>
+                    <span>Activities</span>
+                </button>
+            </div>
+
+            <div id="topbar-clock" onclick="toggleCalendarMenu()"
+                class="absolute left-1/2 -translate-x-1/2 flex items-center justify-center font-medium cursor-pointer px-3 py-1 rounded hover:bg-white/10 transition select-none">
+                Thursday 10:42 AM
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSystemMenu()"
+                    class="flex items-center gap-2 px-3 py-1 rounded hover:bg-white/10 transition">
+                    <span class="material-symbols-outlined text-[18px]">wifi</span>
+                    <span class="material-symbols-outlined text-[18px]">battery_5_bar</span>
+                    <span class="material-symbols-outlined text-[18px]">volume_up</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dropdown System Menu -->
+        <div id="system-dropdown"
+            class="hidden glass-menu w-64 rounded-xl p-4 absolute right-4 top-[54px] z-40 text-white shadow-2xl flex flex-col gap-4">
+            <div class="flex flex-col gap-1.5 border-b border-white/10 pb-3">
+                <div class="flex justify-between items-center text-xs text-white/60">
+                    <span>Volume</span>
+                    <span class="material-symbols-outlined text-sm">volume_up</span>
+                </div>
+                <input class="w-full accent-brand-orange bg-white/20 h-1 rounded-lg appearance-none cursor-pointer"
+                    max="100" min="0" value="80" type="range" />
+            </div>
+            <div class="flex flex-col gap-1.5 border-b border-white/10 pb-3">
+                <div class="flex justify-between items-center text-xs text-white/60">
+                    <span>Brightness</span>
+                    <span class="material-symbols-outlined text-sm">light_mode</span>
+                </div>
+                <input class="w-full accent-brand-orange bg-white/20 h-1 rounded-lg appearance-none cursor-pointer"
+                    max="100" min="0" value="90" type="range" />
+            </div>
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center justify-between hover:bg-white/10 p-2 rounded cursor-pointer transition text-sm"
+                    onclick="lockOS()">
+                    <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">lock</span>
+                        Lock Screen</span>
+                    <span class="text-xs text-white/50">⌘L</span>
+                </div>
+                <div
+                    class="flex items-center justify-between hover:bg-white/10 p-2 rounded cursor-pointer transition text-sm text-[#FF5B5B]">
+                    <span class="flex items-center gap-2"><span
+                            class="material-symbols-outlined text-sm">power_settings_new</span> Power Off</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dropdown Calendar Menu -->
+        <div id="calendar-dropdown"
+            class="hidden glass-menu w-80 rounded-xl p-4 absolute left-1/2 -translate-x-1/2 top-[54px] z-[120] text-white shadow-2xl flex flex-col gap-4">
+            <!-- Time / Date Header -->
+            <div class="border-b border-white/10 pb-3 text-center">
+                <div id="calendar-time" class="text-3xl font-bold tracking-tight">10:42 AM</div>
+                <div id="calendar-full-date" class="text-xs text-white/60 font-semibold mt-1">Thursday, October 26</div>
+            </div>
+
+            <!-- Calendar Navigation Header -->
+            <div class="flex justify-between items-center px-1">
+                <button onclick="navigateMonth(-1)"
+                    class="hover:bg-white/10 p-1 rounded transition flex items-center justify-center">
+                    <span class="material-symbols-outlined text-base">chevron_left</span>
+                </button>
+                <div id="calendar-month-year" class="text-xs font-bold uppercase tracking-wider text-brand-orange">
+                    October 2026</div>
+                <button onclick="navigateMonth(1)"
+                    class="hover:bg-white/10 p-1 rounded transition flex items-center justify-center">
+                    <span class="material-symbols-outlined text-base">chevron_right</span>
+                </button>
+            </div>
+
+            <!-- Month Calendar Grid -->
+            <div>
+                <div class="grid grid-cols-7 gap-1">
+                    <div class="calendar-day-header">Su</div>
+                    <div class="calendar-day-header">Mo</div>
+                    <div class="calendar-day-header">Tu</div>
+                    <div class="calendar-day-header">We</div>
+                    <div class="calendar-day-header">Th</div>
+                    <div class="calendar-day-header">Fr</div>
+                    <div class="calendar-day-header">Sa</div>
+                </div>
+                <div id="calendar-days-grid" class="grid grid-cols-7 gap-1 mt-1">
+                    <!-- Dynamic Days -->
+                </div>
+            </div>
+
+            <!-- Mock Events list -->
+            <div class="border-t border-white/10 pt-3">
+                <h4 class="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs text-brand-orange">event</span> Upcoming Events
+                </h4>
+                <div class="space-y-2 text-xs">
+                    <div class="bg-white/5 border border-white/5 rounded-lg p-2 flex flex-col gap-0.5">
+                        <div class="flex justify-between font-semibold text-white/90">
+                            <span>IITM BS Exam Term Ends</span>
+                            <span class="text-[9px] bg-brand-orange/20 text-brand-orange px-1 py-0.2 rounded">Aug
+                                28</span>
+                        </div>
+                        <span class="text-[10px] text-white/50">Data Science Term Exams</span>
+                    </div>
+                    <div class="bg-white/5 border border-white/5 rounded-lg p-2 flex flex-col gap-0.5">
+                        <div class="flex justify-between font-semibold text-white/90">
+                            <span>OS Portfolio Launch</span>
+                            <span class="text-[9px] bg-green-500/20 text-green-400 px-1 py-0.2 rounded">Today</span>
+                        </div>
+                        <span class="text-[10px] text-white/50">Interactive Desktop Live</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workspace Container -->
+        <div class="flex-1 flex mt-[48px] relative overflow-hidden select-none">
+            <!-- 2. Desktop Launcher Dock (Visible only on desktop >= 768px) -->
+            <nav class="dock-desktop glass-dock w-16 h-full flex flex-col py-4 items-center gap-3 z-30 select-none">
+                <!-- App launcher icons -->
+                <button onclick="toggleWindow('about-window')"
+                    class="w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#772953] to-[#5a1d3f] text-white hover:brightness-110 active:scale-95 transition-all shadow-md relative group">
+                    <span class="material-symbols-outlined text-2xl">person</span>
+                    <span class="dock-indicator hidden" id="about-indicator"></span>
+                    <span
+                        class="hidden group-hover:block absolute left-16 bg-brand-charcoal text-white text-xs px-2 py-1 rounded shadow-lg border border-white/10 whitespace-nowrap">About
+                        Me</span>
+                </button>
+
+                <button onclick="toggleWindow('projects-window')"
+                    class="w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#E95420] to-[#b33a10] text-white hover:brightness-110 active:scale-95 transition-all shadow-md relative group">
+                    <span class="material-symbols-outlined text-2xl">folder</span>
+                    <span class="dock-indicator hidden" id="projects-indicator"></span>
+                    <span
+                        class="hidden group-hover:block absolute left-16 bg-brand-charcoal text-white text-xs px-2 py-1 rounded shadow-lg border border-white/10 whitespace-nowrap">Projects</span>
+                </button>
+
+                <button onclick="toggleWindow('terminal-window')"
+                    class="w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#2D2D2D] to-[#1a1a1a] text-white border border-white/5 hover:brightness-110 active:scale-95 transition-all shadow-md relative group">
+                    <span class="material-symbols-outlined text-2xl">terminal</span>
+                    <span class="dock-indicator hidden" id="terminal-indicator"></span>
+                    <span
+                        class="hidden group-hover:block absolute left-16 bg-brand-charcoal text-white text-xs px-2 py-1 rounded shadow-lg border border-white/10 whitespace-nowrap">Terminal</span>
+                </button>
+
+                <button onclick="toggleWindow('browser-window')"
+                    class="w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#0c7ff2] to-[#085ab0] text-white hover:brightness-110 active:scale-95 transition-all shadow-md relative group">
+                    <span class="material-symbols-outlined text-2xl">language</span>
+                    <span class="dock-indicator hidden" id="browser-indicator"></span>
+                    <span
+                        class="hidden group-hover:block absolute left-16 bg-brand-charcoal text-white text-xs px-2 py-1 rounded shadow-lg border border-white/10 whitespace-nowrap">Portfolio
+                        Web</span>
+                </button>
+
+                <button onclick="toggleWindow('calculator-window')"
+                    class="w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#5c5c5c] to-[#3a3a3a] text-white hover:brightness-110 active:scale-95 transition-all shadow-md relative group">
+                    <span class="material-symbols-outlined text-2xl">calculate</span>
+                    <span class="dock-indicator hidden" id="calculator-indicator"></span>
+                    <span
+                        class="hidden group-hover:block absolute left-16 bg-brand-charcoal text-white text-xs px-2 py-1 rounded shadow-lg border border-white/10 whitespace-nowrap">Calculator</span>
+                </button>
+
+                <button onclick="toggleWindow('contact-window')"
+                    class="w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#FF632F] to-[#d6410f] text-white hover:brightness-110 active:scale-95 transition-all shadow-md relative group">
+                    <span class="material-symbols-outlined text-2xl">mail</span>
+                    <span class="dock-indicator hidden" id="contact-indicator"></span>
+                    <span
+                        class="hidden group-hover:block absolute left-16 bg-brand-charcoal text-white text-xs px-2 py-1 rounded shadow-lg border border-white/10 whitespace-nowrap">Contact</span>
+                </button>
+
+                <a href="https://github.com/SonaliDuvesh" target="_blank"
+                    class="w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#F5F5F7] to-[#d1d1d6] text-brand-charcoal hover:brightness-110 active:scale-95 transition-all shadow-md relative group mt-auto mb-2">
+                    <span class="material-symbols-outlined text-2xl text-brand-aubergine">description</span>
+                    <span
+                        class="hidden group-hover:block absolute left-16 bg-brand-charcoal text-white text-xs px-2 py-1 rounded shadow-lg border border-white/10 whitespace-nowrap">GitHub
+                        Profile</span>
+                </a>
+            </nav>
+
+            <!-- Global mobile bottom navigation task switcher (Hidden on desktop) -->
+            <nav
+                class="dock-mobile md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 rounded-full px-6 py-2 bg-brand-charcoal/90 backdrop-blur-xl shadow-xl flex gap-5 items-center z-40 border border-white/10 text-white/60">
+                <button onclick="toggleWindow('about-window')" class="p-2 hover:text-white transition relative"><span
+                        class="material-symbols-outlined block text-2xl">person</span></button>
+                <button onclick="toggleWindow('projects-window')" class="p-2 hover:text-white transition relative"><span
+                        class="material-symbols-outlined block text-2xl">folder</span></button>
+                <button onclick="toggleWindow('terminal-window')" class="p-2 hover:text-white transition relative"><span
+                        class="material-symbols-outlined block text-2xl">terminal</span></button>
+                <button onclick="toggleWindow('browser-window')" class="p-2 hover:text-white transition relative"><span
+                        class="material-symbols-outlined block text-2xl">language</span></button>
+                <button onclick="toggleWindow('calculator-window')"
+                    class="p-2 hover:text-white transition relative"><span
+                        class="material-symbols-outlined block text-2xl">calculate</span></button>
+                <button onclick="toggleWindow('contact-window')" class="p-2 hover:text-white transition relative"><span
+                        class="material-symbols-outlined block text-2xl">mail</span></button>
+            </nav>
+
+            <!-- 3. Desktop Canvas / App grid -->
+            <div class="flex-1 h-[calc(100vh-48px)] relative overflow-hidden">
+                <!-- Desktop Shortcuts Grid -->
+                <main
+                    class="desktop-shortcuts absolute inset-0 p-6 grid grid-flow-row grid-cols-1 gap-6 w-fit h-fit justify-items-center select-none z-10">
+                    <!-- About Me -->
+                    <div onclick="openWindow('about-window')"
+                        class="flex flex-col items-center gap-1.5 cursor-pointer group w-20">
+                        <div
+                            class="w-14 h-14 bg-[#772953] rounded-2xl shadow-lg flex items-center justify-center text-white transition-all duration-200 group-hover:scale-105 active:scale-95 border border-white/10">
+                            <span class="material-symbols-outlined text-3xl">person</span>
+                        </div>
+                        <span
+                            class="desktop-icon-text text-xs text-white font-medium text-center truncate w-full px-1 group-hover:bg-black/40 group-hover:rounded-md py-0.5 transition-colors">About
+                            Me</span>
+                    </div>
+
+                    <!-- Projects -->
+                    <div onclick="openWindow('projects-window')"
+                        class="flex flex-col items-center gap-1.5 cursor-pointer group w-20">
+                        <div
+                            class="w-14 h-14 bg-[#E95420] rounded-2xl shadow-lg flex items-center justify-center text-white transition-all duration-200 group-hover:scale-105 active:scale-95 border border-white/10">
+                            <span class="material-symbols-outlined text-3xl">folder</span>
+                        </div>
+                        <span
+                            class="desktop-icon-text text-xs text-white font-medium text-center truncate w-full px-1 group-hover:bg-black/40 group-hover:rounded-md py-0.5 transition-colors">Projects</span>
+                    </div>
+
+                    <!-- Terminal -->
+                    <div onclick="openWindow('terminal-window')"
+                        class="flex flex-col items-center gap-1.5 cursor-pointer group w-20">
+                        <div
+                            class="w-14 h-14 bg-[#2D2D2D] rounded-2xl shadow-lg flex items-center justify-center text-white transition-all duration-200 group-hover:scale-105 active:scale-95 border border-white/25">
+                            <span class="material-symbols-outlined text-3xl">terminal</span>
+                        </div>
+                        <span
+                            class="desktop-icon-text text-xs text-white font-medium text-center truncate w-full px-1 group-hover:bg-black/40 group-hover:rounded-md py-0.5 transition-colors">Terminal</span>
+                    </div>
+
+                    <!-- Browser -->
+                    <div onclick="openWindow('browser-window')"
+                        class="flex flex-col items-center gap-1.5 cursor-pointer group w-20">
+                        <div
+                            class="w-14 h-14 bg-[#0c7ff2] rounded-2xl shadow-lg flex items-center justify-center text-white transition-all duration-200 group-hover:scale-105 active:scale-95 border border-white/10">
+                            <span class="material-symbols-outlined text-3xl">language</span>
+                        </div>
+                        <span
+                            class="desktop-icon-text text-xs text-white font-medium text-center truncate w-full px-1 group-hover:bg-black/40 group-hover:rounded-md py-0.5 transition-colors">Portfolio</span>
+                    </div>
+
+                    <!-- Calculator -->
+                    <div onclick="openWindow('calculator-window')"
+                        class="flex flex-col items-center gap-1.5 cursor-pointer group w-20">
+                        <div
+                            class="w-14 h-14 bg-[#5c5c5c] rounded-2xl shadow-lg flex items-center justify-center text-white transition-all duration-200 group-hover:scale-105 active:scale-95 border border-white/10">
+                            <span class="material-symbols-outlined text-3xl">calculate</span>
+                        </div>
+                        <span
+                            class="desktop-icon-text text-xs text-white font-medium text-center truncate w-full px-1 group-hover:bg-black/40 group-hover:rounded-md py-0.5 transition-colors">Calculator</span>
+                    </div>
+
+                    <!-- Contact -->
+                    <div onclick="openWindow('contact-window')"
+                        class="flex flex-col items-center gap-1.5 cursor-pointer group w-20">
+                        <div
+                            class="w-14 h-14 bg-[#FF632F] rounded-2xl shadow-lg flex items-center justify-center text-white transition-all duration-200 group-hover:scale-105 active:scale-95 border border-white/10">
+                            <span class="material-symbols-outlined text-3xl">mail</span>
+                        </div>
+                        <span
+                            class="desktop-icon-text text-xs text-white font-medium text-center truncate w-full px-1 group-hover:bg-black/40 group-hover:rounded-md py-0.5 transition-colors">Contact</span>
+                    </div>
+                </main>
+
+                <!-- Floating Desktop Music Widget (Only visible on larger screens) -->
+                <div id="desktop-music-widget"
+                    class="hidden lg:flex glass-panel border border-white/10 rounded-2xl p-4 absolute right-6 top-6 w-72 flex-col gap-3 select-none text-white shadow-xl z-10 pointer-events-auto">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                        <span
+                            class="text-xs font-bold uppercase tracking-wider text-brand-orange flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">music_note</span> Ambient Lofi
+                        </span>
+                        <div class="flex gap-1">
+                            <div class="music-bar"></div>
+                            <div class="music-bar"></div>
+                            <div class="music-bar"></div>
+                            <div class="music-bar"></div>
+                            <div class="music-bar"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <!-- Disk Cover -->
+                        <div
+                            class="w-16 h-16 rounded-full bg-black/40 border-2 border-white/20 flex items-center justify-center relative overflow-hidden shadow-md flex-shrink-0">
+                            <!-- Spinning vinyl record -->
+                            <div id="vinyl-disk" class="w-full h-full bg-cover bg-center rounded-full"
+                                style="background-image: url('https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=150&q=80');">
+                            </div>
+                            <div class="w-4 h-4 rounded-full bg-[#111111] absolute border border-white/25"></div>
+                        </div>
+
+                        <!-- Track Details -->
+                        <div class="flex flex-col overflow-hidden flex-1">
+                            <div id="track-title" class="text-xs font-bold truncate">Midnight Lofi</div>
+                            <div id="track-artist" class="text-[10px] text-white/50 truncate mt-0.5">Lofi Ambient Beats
+                            </div>
+                            <div class="flex items-center gap-1.5 mt-2">
+                                <span id="track-time-current" class="text-[9px] text-white/40">0:00</span>
+                                <div class="flex-1 bg-white/20 h-1 rounded-full overflow-hidden cursor-pointer"
+                                    onclick="seekAudio(event)" id="track-progress-bar">
+                                    <div id="track-progress" class="bg-brand-orange w-0 h-full rounded-full"></div>
+                                </div>
+                                <span id="track-time-total" class="text-[9px] text-white/40">0:00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex justify-between items-center mt-1">
+                        <div class="flex items-center gap-3">
+                            <button onclick="prevTrack()"
+                                class="hover:bg-white/10 p-1.5 rounded-full transition flex items-center justify-center">
+                                <span class="material-symbols-outlined text-lg">skip_previous</span>
+                            </button>
+                            <button onclick="togglePlayMusic()" id="play-music-btn"
+                                class="bg-brand-orange hover:bg-brand-orange/90 text-white p-2 rounded-full transition flex items-center justify-center shadow">
+                                <span class="material-symbols-outlined text-lg">play_arrow</span>
+                            </button>
+                            <button onclick="nextTrack()"
+                                class="hover:bg-white/10 p-1.5 rounded-full transition flex items-center justify-center">
+                                <span class="material-symbols-outlined text-lg">skip_next</span>
+                            </button>
+                        </div>
+
+                        <!-- Volume control -->
+                        <div class="flex items-center gap-1.5 w-24">
+                            <span class="material-symbols-outlined text-sm text-white/60">volume_down</span>
+                            <input id="music-volume" type="range" min="0" max="1" step="0.05" value="0.5"
+                                class="w-full accent-brand-orange bg-white/20 h-1 rounded-lg appearance-none cursor-pointer"
+                                oninput="setMusicVolume(this.value)" />
+                        </div>
+                    </div>
+
+                    <!-- Hidden Audio Tag -->
+                    <audio id="ambient-audio" preload="auto" ontimeupdate="updateAudioProgress()"
+                        onended="nextTrack()"></audio>
+                </div>
+
+                <!-- Floating Windows Canvas -->
+                <div id="windows-container" class="absolute inset-0 z-20">
+
+                    <!-- ==================== WINDOW: ABOUT ME / SETTINGS ==================== -->
+                    <div id="about-window" class="app-window rounded-xl overflow-hidden hidden"
+                        style="width: 760px; height: 500px; left: 80px; top: 60px;">
+                        <!-- Window Controls -->
+                        <div
+                            class="window-header bg-[#E2E2E2] border-b border-black/10 px-4 py-3 flex justify-between items-center select-none text-brand-charcoal">
+                            <div class="flex items-center gap-1.5 window-controls-desktop">
+                                <button onclick="closeWindow('about-window')"
+                                    class="w-3.5 h-3.5 rounded-full bg-[#FF5F56] border border-[#E0443E] hover:brightness-90"></button>
+                                <button onclick="minimizeWindow('about-window')"
+                                    class="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] border-[#DEA123] hover:brightness-90"></button>
+                                <button onclick="maximizeWindow('about-window')"
+                                    class="w-3.5 h-3.5 rounded-full bg-[#27C93F] border-[#1AAB29] hover:brightness-90"></button>
+                            </div>
+                            <!-- Mobile Back Button -->
+                            <button onclick="closeWindow('about-window')"
+                                class="window-controls-mobile hidden flex items-center justify-center text-brand-charcoal">
+                                <span class="material-symbols-outlined">arrow_back</span>
+                            </button>
+                            <span class="text-sm font-semibold">About Me — Settings</span>
+                            <div class="w-8"></div>
+                        </div>
+
+                        <!-- Window Content -->
+                        <!-- Sidebar (Desktop only) -->
+                        <aside
+                            class="window-sidebar-desktop w-48 bg-brand-aubergine text-white py-4 flex flex-col shrink-0 select-none">
+                            <div class="px-4 mb-6 flex flex-col items-center">
+                                <img alt="Profile"
+                                    class="w-16 h-16 rounded-full object-cover border-2 border-white/30 shadow-md mb-2"
+                                    src="http://sdk.bitmoji.com/render/panel/10226021-106544195541_1-s5-v1.png?transparent=1&palette=1&scale=1" />
+                                <span class="text-xs text-white/50"> sonali </span>
+                            </div>
+                            <nav class="flex flex-col gap-0.5">
+                                <button onclick="switchSettingsTab('about-profile')"
+                                    class="tab-btn active flex items-center gap-3 px-4 py-2 border-l-4 border-brand-orange bg-white/10 text-white font-medium text-xs uppercase tracking-wider">
+                                    <span class="material-symbols-outlined text-lg">person</span> Profile
+                                </button>
+                                <button onclick="switchSettingsTab('about-skills')"
+                                    class="tab-btn flex items-center gap-3 px-4 py-2 border-l-4 border-transparent text-white/70 hover:bg-white/5 hover:text-white transition font-medium text-xs uppercase tracking-wider">
+                                    <span class="material-symbols-outlined text-lg">tune</span> Skills
+                                </button>
+                                <button onclick="switchSettingsTab('about-experience')"
+                                    class="tab-btn flex items-center gap-3 px-4 py-2 border-l-4 border-transparent text-white/70 hover:bg-white/5 hover:text-white transition font-medium text-xs uppercase tracking-wider">
+                                    <span class="material-symbols-outlined text-lg">history</span> Experience
+                                </button>
+                            </nav>
+                        </aside>
+
+                        <!-- Tab Contents -->
+                        <main class="flex-1 bg-[#F7F7F7] p-6 overflow-y-auto pb-20 md:pb-6">
+                            <!-- TAB: PROFILE -->
+                            <div id="about-profile" class="tab-content space-y-6">
+                                <section class="bg-white rounded-xl p-5 border border-black/5 relative overflow-hidden">
+                                    <h2 class="text-lg font-bold text-brand-aubergine mb-4 flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-lg">badge</span> System Identity
+                                    </h2>
+                                    <div class="grid grid-cols-2 gap-4 text-xs">
+                                        <div>
+                                            <p
+                                                class="text-white/40 text-[10px] uppercase font-semibold text-brand-charcoal/50">
+                                                Username</p>
+                                            <p class="font-semibold text-brand-charcoal mt-0.5">sonali</p>
+                                        </div>
+                                        <div>
+                                            <p
+                                                class="text-white/40 text-[10px] uppercase font-semibold text-brand-charcoal/50">
+                                                Root Access</p>
+                                            <p class="font-semibold text-brand-orange flex items-center gap-0.5 mt-0.5">
+                                                <span class="material-symbols-outlined text-sm">verified</span> Verified
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p
+                                                class="text-white/40 text-[10px] uppercase font-semibold text-brand-charcoal/50">
+                                                System Location</p>
+                                            <p class="font-semibold text-brand-charcoal mt-0.5">IIT Madras, India</p>
+                                        </div>
+                                        <div>
+                                            <p
+                                                class="text-white/40 text-[10px] uppercase font-semibold text-brand-charcoal/50">
+                                                System Uptime</p>
+                                            <p class="font-semibold text-brand-charcoal mt-0.5">2 years, 6 months</p>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <section class="bg-white rounded-xl p-5 border border-black/5">
+                                    <h2 class="text-sm font-semibold text-brand-charcoal mb-2">Kernel Description</h2>
+                                    <p class="text-xs text-brand-charcoal/80 leading-relaxed">
+                                        Driven by curiosity and continuous improvement. Pursuing a BS in Data Science
+                                        and Applications at IIT Madras, with a passion for web engineering, computer
+                                        vision, data analytics, and interactive applications.
+                                    </p>
+                                </section>
+                            </div>
+
+                            <!-- TAB: SKILLS -->
+                            <div id="about-skills" class="tab-content hidden space-y-4">
+                                <h2 class="text-lg font-bold text-brand-aubergine mb-2 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-lg">tune</span> Core Competencies
+                                </h2>
+                                <div class="space-y-4 bg-white p-5 rounded-xl border border-black/5">
+                                    <!-- Skill -->
+                                    <div>
+                                        <div class="flex justify-between items-end mb-1 text-xs">
+                                            <span class="font-medium text-brand-charcoal">Python & JavaScript</span>
+                                            <span class="font-bold text-brand-orange">95%</span>
+                                        </div>
+                                        <div
+                                            class="w-full h-2 bg-brand-canvasGray rounded-full overflow-hidden border border-black/5">
+                                            <div class="h-full bg-brand-orange rounded-full" style="width: 95%;"></div>
+                                        </div>
+                                    </div>
+                                    <!-- Skill -->
+                                    <div>
+                                        <div class="flex justify-between items-end mb-1 text-xs">
+                                            <span class="font-medium text-brand-charcoal">VueJS, Flask &
+                                                Bootstrap</span>
+                                            <span class="font-bold text-brand-orange">90%</span>
+                                        </div>
+                                        <div
+                                            class="w-full h-2 bg-brand-canvasGray rounded-full overflow-hidden border border-black/5">
+                                            <div class="h-full bg-brand-orange rounded-full" style="width: 90%;"></div>
+                                        </div>
+                                    </div>
+                                    <!-- Skill -->
+                                    <div>
+                                        <div class="flex justify-between items-end mb-1 text-xs">
+                                            <span class="font-medium text-brand-charcoal">Data Science & web
+                                                scraping</span>
+                                            <span class="font-bold text-brand-orange">85%</span>
+                                        </div>
+                                        <div
+                                            class="w-full h-2 bg-brand-canvasGray rounded-full overflow-hidden border border-black/5">
+                                            <div class="h-full bg-brand-orange rounded-full" style="width: 85%;"></div>
+                                        </div>
+                                    </div>
+                                    <!-- Skill -->
+                                    <div>
+                                        <div class="flex justify-between items-end mb-1 text-xs">
+                                            <span class="font-medium text-brand-charcoal">Computer Vision & Data
+                                                Analytics</span>
+                                            <span class="font-bold text-brand-orange">80%</span>
+                                        </div>
+                                        <div
+                                            class="w-full h-2 bg-brand-canvasGray rounded-full overflow-hidden border border-black/5">
+                                            <div class="h-full bg-brand-orange rounded-full" style="width: 80%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TAB: EXPERIENCE -->
+                            <div id="about-experience" class="tab-content hidden space-y-4">
+                                <h2 class="text-lg font-bold text-brand-aubergine mb-2 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-lg">history</span> Execution History
+                                </h2>
+                                <div class="space-y-4 bg-white p-5 rounded-xl border border-black/5">
+                                    <!-- Timeline element 1 -->
+                                    <div class="flex gap-4">
+                                        <div class="flex flex-col items-center">
+                                            <div class="w-3 h-3 rounded-full bg-brand-orange"></div>
+                                            <div class="w-[2px] h-20 bg-brand-canvasGray mt-1"></div>
+                                        </div>
+                                        <div>
+                                            <span
+                                                class="text-[10px] bg-brand-canvasGray px-2 py-0.5 rounded text-brand-charcoal font-semibold">2023
+                                                - Present</span>
+                                            <h3 class="text-sm font-semibold text-brand-charcoal mt-1">BS in Data
+                                                Science and Applications</h3>
+                                            <p class="text-xs text-brand-orange font-medium">@IIT_Madras</p>
+                                            <p class="text-xs text-brand-charcoal/70 mt-1">Learning advanced statistical
+                                                modeling, programming, database query systems, and ML frameworks.</p>
+                                        </div>
+                                    </div>
+                                    <!-- Timeline element 2 -->
+                                    <div class="flex gap-4">
+                                        <div class="flex flex-col items-center">
+                                            <div class="w-3 h-3 rounded-full bg-brand-aubergine/40"></div>
+                                            <div class="w-[2px] h-20 bg-brand-canvasGray mt-1"></div>
+                                        </div>
+                                        <div>
+                                            <span
+                                                class="text-[10px] bg-brand-canvasGray px-2 py-0.5 rounded text-brand-charcoal font-semibold">2024
+                                                - Present</span>
+                                            <h3 class="text-sm font-semibold text-brand-charcoal mt-1">Independent
+                                                Developer & Creator</h3>
+                                            <p class="text-xs text-brand-aubergine font-medium">@GitHub_Program</p>
+                                            <p class="text-xs text-brand-charcoal/70 mt-1">Developing browser sports
+                                                computer vision engines and full-stack placement portal automation
+                                                databases.</p>
+                                        </div>
+                                    </div>
+                                    <!-- Timeline element 3 -->
+                                    <div class="flex gap-4">
+                                        <div class="flex flex-col items-center">
+                                            <div class="w-3 h-3 rounded-full bg-brand-aubergine/40"></div>
+                                        </div>
+                                        <div>
+                                            <span
+                                                class="text-[10px] bg-brand-canvasGray px-2 py-0.5 rounded text-brand-charcoal font-semibold">2023</span>
+                                            <h3 class="text-sm font-semibold text-brand-charcoal mt-1">Python Engineer &
+                                                Scraper</h3>
+                                            <p class="text-xs text-brand-aubergine font-medium">@GitHub_REST_API</p>
+                                            <p class="text-xs text-brand-charcoal/70 mt-1">Built interactive data
+                                                extraction tools (TDS Seattle developers study) and wallpaper generators
+                                                (SecretWallpaper).</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+
+                        <!-- Mobile app internal bottom nav switcher (Settings only, visible < 768px) -->
+                        <nav
+                            class="window-sidebar-mobile hidden absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full px-6 py-2 bg-brand-charcoal/95 border border-white/10 shadow-xl gap-6 items-center z-50 text-white/60">
+                            <button onclick="switchSettingsTab('about-profile')"
+                                class="p-1 hover:text-white transition"><span
+                                    class="material-symbols-outlined text-2xl">person</span></button>
+                            <button onclick="switchSettingsTab('about-skills')"
+                                class="p-1 hover:text-white transition"><span
+                                    class="material-symbols-outlined text-2xl">tune</span></button>
+                            <button onclick="switchSettingsTab('about-experience')"
+                                class="p-1 hover:text-white transition"><span
+                                    class="material-symbols-outlined text-2xl">history</span></button>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- ==================== WINDOW: PROJECTS / FILES ==================== -->
+                <div id="projects-window" class="app-window rounded-xl overflow-hidden hidden"
+                    style="width: 800px; height: 500px; left: 160px; top: 120px;">
+                    <!-- Header controls -->
+                    <div
+                        class="window-header bg-[#E2E2E2] border-b border-black/10 px-4 py-3 flex justify-between items-center z-10 select-none text-brand-charcoal">
+                        <div class="flex items-center gap-1.5 window-controls-desktop">
+                            <button onclick="closeWindow('projects-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#FF5F56] border border-[#E0443E] hover:brightness-90"></button>
+                            <button onclick="minimizeWindow('projects-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] border-[#DEA123] hover:brightness-90"></button>
+                            <button onclick="maximizeWindow('projects-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#27C93F] border-[#1AAB29] hover:brightness-90"></button>
+                        </div>
+                        <!-- Mobile Back Button -->
+                        <button onclick="closeWindow('projects-window')"
+                            class="window-controls-mobile hidden flex items-center justify-center text-brand-charcoal">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </button>
+                        <span class="text-sm font-semibold">Files — Projects</span>
+
+                        <!-- Search Field inside window -->
+                        <div class="relative w-44">
+                            <span
+                                class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-xs text-brand-charcoal/50">search</span>
+                            <input
+                                class="w-full bg-[#EBEBEB] text-xs text-brand-charcoal rounded-full py-1 pl-7 pr-3 border-none focus:ring-1 focus:ring-brand-orange focus:bg-white"
+                                placeholder="Search..." type="text" />
+                        </div>
+                    </div>
+
+                    <!-- Toolbar/Breadcrumb -->
+                    <div
+                        class="px-5 py-2 border-b border-black/5 bg-[#F2F2F2] flex justify-between items-center text-xs text-brand-charcoal/70 select-none">
+                        <div class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">home</span>
+                            <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+                            <span>Home</span>
+                            <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+                            <span class="font-semibold text-brand-charcoal">Projects</span>
+                        </div>
+                        <div class="flex items-center gap-0.5 bg-black/5 p-0.5 rounded">
+                            <button class="p-1 bg-white rounded shadow-sm text-brand-charcoal"><span
+                                    class="material-symbols-outlined text-sm">grid_view</span></button>
+                            <button class="p-1 hover:bg-black/5 text-brand-charcoal/50 rounded"><span
+                                    class="material-symbols-outlined text-sm">view_list</span></button>
+                        </div>
+                    </div>
+
+                    <!-- Inner Content split -->
+                    <div class="flex-1 flex overflow-hidden relative">
+                        <!-- Sidebar folders (Desktop only) -->
+                        <aside
+                            class="window-sidebar-desktop w-48 bg-brand-aubergine text-white/90 py-4 flex flex-col shrink-0 select-none text-xs">
+                            <nav class="flex flex-col gap-0.5 px-2">
+                                <button
+                                    class="flex items-center gap-3 px-3 py-2 rounded-lg bg-white/10 font-semibold text-white">
+                                    <span class="material-symbols-outlined text-base">folder</span> Home
+                                </button>
+                                <button
+                                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-white/60 hover:bg-white/5 transition">
+                                    <span class="material-symbols-outlined text-base">desktop_windows</span> Desktop
+                                </button>
+                                <button
+                                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-white/60 hover:bg-white/5 transition">
+                                    <span class="material-symbols-outlined text-base">downloads</span> Downloads
+                                </button>
+                                <button
+                                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-white/60 hover:bg-white/5 transition">
+                                    <span class="material-symbols-outlined text-base">delete</span> Trash
+                                </button>
+                            </nav>
+                            <div class="mt-auto px-4 py-4 border-t border-white/10">
+                                <p class="text-white/50 text-[10px] uppercase font-bold">Local Disk Space</p>
+                                <div class="w-full bg-white/20 h-1.5 rounded-full mt-1.5 overflow-hidden">
+                                    <div class="bg-brand-orange w-[45%] h-full rounded-full"></div>
+                                </div>
+                                <p class="text-white/40 text-[10px] mt-1">45% Used of 512GB</p>
+                            </div>
+                        </aside>
+
+                        <!-- Folder Grid -->
+                        <div class="flex-1 p-5 overflow-y-auto bg-white flex flex-col pb-20 md:pb-5">
+                            <h3 class="text-xs font-bold text-brand-charcoal/50 uppercase tracking-wider mb-3">Folders
+                            </h3>
+                            <div id="project-folders-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <!-- Fallback Folders (Rendered initially, replaced/augmented by live GitHub fetch) -->
+                                <div onclick="selectFolder('allMomentMatters', 'JavaScript, Computer Vision', 'A browser-based computer vision & data analytics engine for racket sports (Badminton & Tennis). Turns match videos into movement intelligence.', 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80', 'https://github.com/SonaliDuvesh/allMomentMatters')"
+                                    ondblclick="launchSelectedFolder()"
+                                    class="folder-icon flex flex-col items-center p-3 rounded-xl hover:bg-brand-canvasGray border border-transparent hover:border-black/5 cursor-pointer text-center group transition w-full overflow-hidden">
+                                    <span
+                                        class="material-symbols-outlined text-[54px] text-brand-orange/80 group-hover:scale-105 transition duration-200">folder</span>
+                                    <span
+                                        class="text-xs font-semibold text-brand-charcoal mt-1 group-hover:text-brand-orange w-full truncate block px-1"
+                                        title="allMomentMatters">allMomentMatters</span>
+                                </div>
+
+                                <div onclick="selectFolder('Placement_Portal_Vue', 'Flask, VueJS, Redis, Celery', 'Campus recruitment portal featuring drive approvals, eligibility criteria filters, and async CSV exports.', 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80', 'https://github.com/SonaliDuvesh/Placement_Portal_Vue')"
+                                    ondblclick="launchSelectedFolder()"
+                                    class="folder-icon flex flex-col items-center p-3 rounded-xl hover:bg-brand-canvasGray border border-transparent hover:border-black/5 cursor-pointer text-center group transition w-full overflow-hidden">
+                                    <span
+                                        class="material-symbols-outlined text-[54px] text-brand-orange/80 group-hover:scale-105 transition duration-200">folder</span>
+                                    <span
+                                        class="text-xs font-semibold text-brand-charcoal mt-1 group-hover:text-brand-orange w-full truncate block px-1"
+                                        title="Placement_Portal_Vue">Placement_Portal_Vue</span>
+                                </div>
+
+                                <div onclick="selectFolder('SecretWallpaper', 'Python, Pillow', 'Generates mosaic phone wallpapers by tiling an image thousands of times.', 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80', 'https://github.com/SonaliDuvesh/SecretWallpaper')"
+                                    ondblclick="launchSelectedFolder()"
+                                    class="folder-icon flex flex-col items-center p-3 rounded-xl hover:bg-brand-canvasGray border border-transparent hover:border-black/5 cursor-pointer text-center group transition w-full overflow-hidden">
+                                    <span
+                                        class="material-symbols-outlined text-[54px] text-brand-orange/80 group-hover:scale-105 transition duration-200">folder</span>
+                                    <span
+                                        class="text-xs font-semibold text-brand-charcoal mt-1 group-hover:text-brand-orange w-full truncate block px-1"
+                                        title="SecretWallpaper">SecretWallpaper</span>
+                                </div>
+
+                                <div onclick="selectFolder('TDS_Project_1', 'Python, GitHub REST API', 'GitHub REST API scraping & analysis project studying Seattle-based developers.', 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80', 'https://github.com/SonaliDuvesh/TDS_Project_1')"
+                                    ondblclick="launchSelectedFolder()"
+                                    class="folder-icon flex flex-col items-center p-3 rounded-xl hover:bg-brand-canvasGray border border-transparent hover:border-black/5 cursor-pointer text-center group transition w-full overflow-hidden">
+                                    <span
+                                        class="material-symbols-outlined text-[54px] text-brand-orange/80 group-hover:scale-105 transition duration-200">folder</span>
+                                    <span
+                                        class="text-xs font-semibold text-brand-charcoal mt-1 group-hover:text-brand-orange w-full truncate block px-1"
+                                        title="TDS_Project_1">TDS_Project_1</span>
+                                </div>
+
+                                <div onclick="selectFolder('howToFlirt', 'Python, Humorous', 'A playful, humorous flirting-as-code experiment with fake imports and friendly fallbacks.', 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80', 'https://github.com/SonaliDuvesh/howToFlirt')"
+                                    ondblclick="launchSelectedFolder()"
+                                    class="folder-icon flex flex-col items-center p-3 rounded-xl hover:bg-brand-canvasGray border border-transparent hover:border-black/5 cursor-pointer text-center group transition w-full overflow-hidden">
+                                    <span
+                                        class="material-symbols-outlined text-[54px] text-brand-orange/80 group-hover:scale-105 transition duration-200">folder</span>
+                                    <span
+                                        class="text-xs font-semibold text-brand-charcoal mt-1 group-hover:text-brand-orange w-full truncate block px-1"
+                                        title="howToFlirt">howToFlirt</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Info Sidebar (Desktop only) -->
+                        <aside id="file-details-sidebar"
+                            class="window-detail-desktop w-60 bg-brand-canvasGray border-l border-black/10 flex flex-col hidden select-none flex-shrink-0">
+                            <div
+                                class="p-3 border-b border-black/5 bg-[#EBEBEB] flex justify-between items-center text-xs">
+                                <span class="font-bold text-brand-charcoal">Properties</span>
+                                <button onclick="closeFolderDetails()"
+                                    class="material-symbols-outlined text-sm hover:bg-black/10 p-1 rounded-full text-brand-charcoal/60">close</button>
+                            </div>
+                            <div class="p-4 flex flex-col gap-3 overflow-y-auto flex-1">
+                                <div class="w-full h-24 bg-black/10 rounded-lg overflow-hidden relative">
+                                    <img id="folder-detail-img" class="w-full h-full object-cover" src="" />
+                                </div>
+                                <div>
+                                    <h4 id="folder-detail-title" class="text-sm font-bold text-brand-charcoal truncate">
+                                        Project Title</h4>
+                                    <p class="text-[10px] text-brand-charcoal/50 mt-0.5">Type: GitHub Repository</p>
+                                </div>
+                                <div class="flex flex-wrap gap-1.5" id="folder-detail-tags">
+                                    <!-- Inject tags -->
+                                </div>
+                                <p id="folder-detail-desc"
+                                    class="text-xs text-brand-charcoal/80 border-t border-black/5 pt-3 leading-relaxed">
+                                    Description goes here.
+                                </p>
+                                <div class="mt-auto pt-4 flex gap-2">
+                                    <button onclick="launchSelectedFolder()"
+                                        class="flex-1 bg-brand-orange text-white py-1.5 rounded-lg text-xs font-semibold hover:brightness-105 active:scale-95 transition-all">Launch
+                                        Web</button>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <!-- Mobile properties popup card (Alternative to desktop sidebar) -->
+                        <div id="file-details-popup"
+                            class="hidden md:hidden fixed inset-x-0 bottom-16 bg-white border-t border-black/10 p-4 shadow-xl z-50 flex flex-col gap-3 select-none">
+                            <div class="flex justify-between items-center">
+                                <h4 id="folder-detail-title-mobile"
+                                    class="text-sm font-bold text-brand-charcoal truncate">Project Title</h4>
+                                <button onclick="closeFolderDetailsMobile()"
+                                    class="material-symbols-outlined text-sm text-brand-charcoal/55">close</button>
+                            </div>
+                            <p id="folder-detail-desc-mobile" class="text-xs text-brand-charcoal/70 leading-relaxed">
+                            </p>
+                            <button onclick="launchSelectedFolder()"
+                                class="w-full bg-brand-orange text-white py-2 rounded-lg text-xs font-semibold hover:brightness-105 transition-all">Launch
+                                Web View</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== WINDOW: TERMINAL ==================== -->
+                <div id="terminal-window" class="app-window rounded-xl overflow-hidden hidden"
+                    style="width: 680px; height: 420px; left: 240px; top: 140px;">
+                    <!-- Header controls -->
+                    <div
+                        class="window-header bg-[#212121] border-b border-black/30 px-4 py-3 flex justify-between items-center select-none text-white">
+                        <div class="flex items-center gap-1.5 window-controls-desktop">
+                            <button onclick="closeWindow('terminal-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#FF5F56] border border-[#E0443E] hover:brightness-90"></button>
+                            <button onclick="minimizeWindow('terminal-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] border-[#DEA123] hover:brightness-90"></button>
+                            <button onclick="maximizeWindow('terminal-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#27C93F] border-[#1AAB29] hover:brightness-90"></button>
+                        </div>
+                        <!-- Mobile Back Button -->
+                        <button onclick="closeWindow('terminal-window')"
+                            class="window-controls-mobile hidden flex items-center justify-center text-white">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </button>
+                        <span class="text-sm font-semibold text-white/90">sonali@sonali-os: ~</span>
+                        <div class="w-8"></div>
+                    </div>
+
+                    <!-- Shell body -->
+                    <div onclick="focusTerminalInput()"
+                        class="flex-1 bg-[#111111] text-[#A6E22E] p-4 overflow-y-auto terminal-container text-sm leading-relaxed flex flex-col justify-start">
+                        <div id="terminal-history" class="space-y-1 text-white/90">
+                            <div>Welcome to Sonali OS v1.0.0 (Ubuntu converged architecture)</div>
+                            <div>System status: <span class="text-green-500 font-bold">ONLINE</span>. Logged in as
+                                sonali.</div>
+                            <div>Type <span class="text-brand-orange font-bold">help</span> to view available terminal
+                                commands.</div>
+                            <br />
+                        </div>
+
+                        <!-- Input Prompt -->
+                        <div class="flex items-center gap-1 text-white">
+                            <span class="text-[#859900]">sonali@sonali-os</span><span
+                                class="text-[#D33682]">:</span><span class="text-[#268BD2]">~$</span>
+                            <input id="terminal-input"
+                                class="flex-1 bg-transparent border-none outline-none focus:ring-0 p-0 text-white select-text font-mono"
+                                type="text" autocomplete="off" autofocus onkeydown="handleTerminalCommand(event)" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== WINDOW: BROWSER ==================== -->
+                <div id="browser-window" class="app-window rounded-xl overflow-hidden hidden"
+                    style="width: 860px; height: 550px; left: 120px; top: 80px;">
+                    <!-- Header controls -->
+                    <div
+                        class="window-header bg-[#E2E2E2] border-b border-black/10 px-4 py-3 flex justify-between items-center select-none text-brand-charcoal">
+                        <div class="flex items-center gap-1.5 window-controls-desktop flex-shrink-0">
+                            <button onclick="closeWindow('browser-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#FF5F56] border border-[#E0443E] hover:brightness-90"></button>
+                            <button onclick="minimizeWindow('browser-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] border-[#DEA123] hover:brightness-90"></button>
+                            <button onclick="maximizeWindow('browser-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#27C93F] border-[#1AAB29] hover:brightness-90"></button>
+                        </div>
+
+                        <!-- Browser Navigation Buttons -->
+                        <div class="flex items-center gap-1 ml-4 text-brand-charcoal/60 flex-shrink-0">
+                            <button onclick="goBrowserBack()"
+                                class="hover:bg-black/10 p-1 rounded transition flex items-center justify-center"
+                                title="Back">
+                                <span class="material-symbols-outlined text-base">arrow_back</span>
+                            </button>
+                            <button onclick="goBrowserForward()"
+                                class="hover:bg-black/10 p-1 rounded transition flex items-center justify-center"
+                                title="Forward">
+                                <span class="material-symbols-outlined text-base">arrow_forward</span>
+                            </button>
+                            <button onclick="reloadBrowser()"
+                                class="hover:bg-black/10 p-1 rounded transition flex items-center justify-center"
+                                title="Reload">
+                                <span class="material-symbols-outlined text-base">refresh</span>
+                            </button>
+                            <button onclick="goBrowserHome()"
+                                class="hover:bg-black/10 p-1 rounded transition flex items-center justify-center"
+                                title="Home">
+                                <span class="material-symbols-outlined text-base">home</span>
+                            </button>
+                        </div>
+
+                        <!-- Mobile Back Button -->
+                        <button onclick="closeWindow('browser-window')"
+                            class="window-controls-mobile hidden flex items-center justify-center text-brand-charcoal">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </button>
+
+                        <!-- Browser Address bar -->
+                        <div class="flex-1 mx-4 relative flex items-center justify-center">
+                            <div
+                                class="bg-white/80 border border-black/10 rounded-full w-full max-w-lg py-1 px-4 text-[11px] text-brand-charcoal flex items-center gap-2 focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-orange/30 transition-all">
+                                <span id="browser-lock-icon"
+                                    class="material-symbols-outlined text-sm text-green-600">lock</span>
+                                <input type="text" id="browser-address-input"
+                                    class="w-full bg-transparent border-none p-0 text-[11px] text-brand-charcoal focus:ring-0 select-text outline-none"
+                                    value="https://sonali.dev" onkeydown="handleBrowserNavigation(event)" />
+                            </div>
+                        </div>
+                        <div class="w-4"></div>
+                    </div>
+
+                    <!-- Browser Viewport Container -->
+                    <div id="browser-viewport" class="flex-grow bg-white flex flex-col overflow-hidden relative">
+                        <!-- Loading Indicator Overlay -->
+                        <div id="browser-loading"
+                            class="hidden absolute inset-0 bg-white/60 z-50 flex items-center justify-center">
+                            <div class="flex gap-1.5 items-center">
+                                <div class="w-2.5 h-2.5 bg-brand-orange rounded-full dot shadow"></div>
+                                <div class="w-2.5 h-2.5 bg-brand-orange rounded-full dot shadow"></div>
+                                <div class="w-2.5 h-2.5 bg-brand-orange rounded-full dot shadow"></div>
+                            </div>
+                        </div>
+
+                        <!-- Homepage View (Default) -->
+                        <div id="browser-homepage"
+                            class="flex-1 overflow-y-auto p-6 bg-slate-50 flex flex-col items-center justify-start gap-6 select-none">
+                            <div class="text-center mt-4">
+                                <h1 class="text-3xl font-extrabold text-brand-aubergine tracking-tight">Sonali Browser
+                                </h1>
+                                <p class="text-xs text-brand-orange font-semibold tracking-wide uppercase mt-1">Explore
+                                    the Interactive Web</p>
+                            </div>
+
+                            <!-- DuckDuckGo Search Input -->
+                            <div
+                                class="w-full max-w-md bg-white border border-black/15 shadow-sm rounded-full px-4 py-2 flex items-center gap-2.5 focus-within:ring-2 focus-within:ring-brand-orange/20 transition-all">
+                                <span class="material-symbols-outlined text-brand-charcoal/50 text-base">search</span>
+                                <input type="text" id="browser-search-input"
+                                    class="w-full bg-transparent border-none p-0 text-xs text-brand-charcoal focus:ring-0 outline-none select-text"
+                                    placeholder="Search the web with DuckDuckGo..."
+                                    onkeydown="handleBrowserSearch(event)" />
+                            </div>
+
+                            <!-- Bookmark Cards Grid -->
+                            <div class="w-full max-w-xl mt-2">
+                                <h4 class="text-[10px] font-bold text-brand-charcoal/40 uppercase tracking-wider mb-2">
+                                    Curated Bookmarks</h4>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <!-- Bookmark 1: Wikipedia -->
+                                    <div onclick="navigateBrowser('https://en.m.wikipedia.org')"
+                                        class="bg-white border border-black/5 hover:border-brand-orange/30 hover:shadow-md p-4 rounded-xl cursor-pointer text-center flex flex-col items-center gap-2 transition-all">
+                                        <span
+                                            class="material-symbols-outlined text-3xl text-brand-aubergine">menu_book</span>
+                                        <span class="text-xs font-semibold text-brand-charcoal">Wikipedia</span>
+                                    </div>
+                                    <!-- Bookmark 2: OpenStreetMap -->
+                                    <div onclick="navigateBrowser('https://www.openstreetmap.org/export/embed.html')"
+                                        class="bg-white border border-black/5 hover:border-brand-orange/30 hover:shadow-md p-4 rounded-xl cursor-pointer text-center flex flex-col items-center gap-2 transition-all">
+                                        <span class="material-symbols-outlined text-3xl text-brand-orange">map</span>
+                                        <span class="text-xs font-semibold text-brand-charcoal">OpenStreetMap</span>
+                                    </div>
+                                    <!-- Bookmark 3: Archive Games -->
+                                    <div onclick="navigateBrowser('https://archive.org/embed/softwarelibrary_msdos_games')"
+                                        class="bg-white border border-black/5 hover:border-brand-orange/30 hover:shadow-md p-4 rounded-xl cursor-pointer text-center flex flex-col items-center gap-2 transition-all">
+                                        <span
+                                            class="material-symbols-outlined text-3xl text-blue-500">sports_esports</span>
+                                        <span class="text-xs font-semibold text-brand-charcoal">MS-DOS Games</span>
+                                    </div>
+                                    <!-- Bookmark 4: Local Portfolio Homepage -->
+                                    <div onclick="navigateBrowser('local-homepage')"
+                                        class="bg-white border border-black/5 hover:border-brand-orange/30 hover:shadow-md p-4 rounded-xl cursor-pointer text-center flex flex-col items-center gap-2 transition-all">
+                                        <span class="material-symbols-outlined text-3xl text-green-600">badge</span>
+                                        <span class="text-xs font-semibold text-brand-charcoal">Local Portfolio</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Local Web Copy (Fallback page shown inside the browser) -->
+                            <div id="local-browser-doc"
+                                class="hidden w-full max-w-2xl bg-white rounded-2xl border border-black/5 p-6 shadow-sm space-y-6 select-text text-left mt-2">
+                                <header class="text-center pb-4 border-b border-black/5">
+                                    <h2 class="text-2xl font-extrabold text-brand-aubergine">Sonali Duvesh</h2>
+                                    <p class="text-xs text-brand-orange font-semibold tracking-wide uppercase mt-1">Data
+                                        Scientist & Full-Stack Web Developer</p>
+                                </header>
+                                <section class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                                    <div class="md:col-span-2 space-y-3 text-brand-charcoal">
+                                        <h3 class="text-sm font-bold">Data Science & Racket Sports Analytics</h3>
+                                        <p class="text-xs text-brand-charcoal/80 leading-relaxed">
+                                            I specialize in combining data science with practical software engineering.
+                                            My work ranges from building zero-dependency computer vision engines that
+                                            analyze sports videos (All Movement Matters) to designing full-stack
+                                            recruitment portals using Flask, VueJS, and Celery.
+                                        </p>
+                                    </div>
+                                    <div class="flex justify-center">
+                                        <div
+                                            class="relative w-20 h-20 rounded-full overflow-hidden border-2 border-brand-orange/20 shadow-sm">
+                                            <img alt="Portrait" class="w-full h-full object-cover"
+                                                src="https://sdk.bitmoji.com/render/panel/10226021-106544195541_1-s5-v1.png?transparent=1&palette=1&scale=1" />
+                                        </div>
+                                    </div>
+                                </section>
+                                <section class="space-y-3 border-t border-black/5 pt-4">
+                                    <h3 class="text-xs font-bold text-brand-charcoal uppercase tracking-wider">Featured
+                                        Engineering</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div class="bg-brand-canvasGray border border-black/5 rounded-xl p-3">
+                                            <span
+                                                class="text-[9px] bg-brand-orange/10 text-brand-orange px-2 py-0.5 rounded font-bold uppercase">Computer
+                                                Vision App</span>
+                                            <h4 class="text-xs font-bold text-brand-charcoal mt-1">allMomentMatters</h4>
+                                            <p class="text-[10px] text-brand-charcoal/70 mt-1 leading-relaxed">A
+                                                browser-based computer vision engine that tracks badminton/tennis player
+                                                speed and court coverage from match videos.</p>
+                                        </div>
+                                        <div class="bg-brand-canvasGray border border-black/5 rounded-xl p-3">
+                                            <span
+                                                class="text-[9px] bg-brand-aubergine/10 text-brand-aubergine px-2 py-0.5 rounded font-bold uppercase">Full
+                                                Stack Portal</span>
+                                            <h4 class="text-xs font-bold text-brand-charcoal mt-1">Placement_Portal_Vue
+                                            </h4>
+                                            <p class="text-[10px] text-brand-charcoal/70 mt-1 leading-relaxed">Campus
+                                                recruitment portal featuring drive approvals, eligibility criteria
+                                                filters, and async CSV exports.</p>
+                                        </div>
+                                    </div>
+                                </section>
+                                <footer
+                                    class="text-center pt-4 border-t border-black/5 text-[9px] text-brand-charcoal/40">
+                                    © 2026 Sonali Duvesh. Build version: convergence-1.0.0
+                                </footer>
+                            </div>
+                        </div>
+
+                        <!-- Live Iframe View Container -->
+                        <div id="browser-iframe-container" class="flex-1 hidden flex-col relative w-full h-full">
+                            <div id="browser-iframe-bar"
+                                class="bg-amber-50 border-b border-amber-200 px-4 py-1 flex justify-between items-center select-none shrink-0">
+                                <span class="flex items-center gap-1.5 text-[10px] text-amber-800"><span
+                                        class="material-symbols-outlined text-xs">info</span> Note: Some sites block
+                                    framing for security. If blank, try standard mobile Wikipedia or search.</span>
+                                <button onclick="dismissIframeBar()"
+                                    class="material-symbols-outlined text-xs hover:bg-amber-100 p-0.5 rounded text-amber-800/60">close</button>
+                            </div>
+                            <iframe id="browser-iframe" class="w-full h-full border-none bg-white" src=""
+                                onload="onIframeLoaded()"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== WINDOW: CALCULATOR ==================== -->
+                <div id="calculator-window" class="app-window rounded-xl overflow-hidden hidden"
+                    style="width: 320px; height: 460px; left: 300px; top: 160px;">
+                    <!-- Header controls -->
+                    <div
+                        class="window-header bg-[#3A3A3A] border-b border-black/10 px-4 py-3 flex justify-between items-center select-none text-white">
+                        <div class="flex items-center gap-1.5 window-controls-desktop">
+                            <button onclick="closeWindow('calculator-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#FF5F56] border border-[#E0443E] hover:brightness-90"></button>
+                            <button onclick="minimizeWindow('calculator-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] border-[#DEA123] hover:brightness-90"></button>
+                            <button onclick="maximizeWindow('calculator-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#27C93F] border-[#1AAB29] hover:brightness-90"></button>
+                        </div>
+                        <!-- Mobile Back Button -->
+                        <button onclick="closeWindow('calculator-window')"
+                            class="window-controls-mobile hidden flex items-center justify-center text-white">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </button>
+                        <span class="text-sm font-semibold">Calculator</span>
+                        <div class="w-8"></div>
+                    </div>
+
+                    <!-- Calculator body -->
+                    <div class="flex-1 bg-[#1E1E1E] p-4 flex flex-col gap-4">
+                        <!-- Display screen -->
+                        <div class="bg-[#111111] p-4 rounded-lg text-right text-white font-mono text-2xl h-16 flex items-center justify-end overflow-x-auto select-text"
+                            id="calc-screen">0</div>
+                        <!-- Buttons grid -->
+                        <div class="grid grid-cols-4 gap-2 flex-1">
+                            <button onclick="pressCalc('C')"
+                                class="bg-gray-700 hover:bg-gray-600 text-white rounded-lg p-3 text-lg font-bold transition active:scale-95">C</button>
+                            <button onclick="pressCalc('(')"
+                                class="bg-gray-700 hover:bg-gray-600 text-white rounded-lg p-3 text-lg font-bold transition active:scale-95">(</button>
+                            <button onclick="pressCalc(')')"
+                                class="bg-gray-700 hover:bg-gray-600 text-white rounded-lg p-3 text-lg font-bold transition active:scale-95">)</button>
+                            <button onclick="pressCalc('/')"
+                                class="bg-brand-orange hover:bg-brand-orange/90 text-white rounded-lg p-3 text-lg font-bold transition active:scale-95">/</button>
+
+                            <button onclick="pressCalc('7')"
+                                class="bg-gray-800 hover:bg-gray-750 text-white rounded-lg p-3 text-lg font-semibold transition active:scale-95">7</button>
+                            <button onclick="pressCalc('8')"
+                                class="bg-gray-800 hover:bg-gray-750 text-white rounded-lg p-3 text-lg font-semibold transition active:scale-95">8</button>
+                            <button onclick="pressCalc('9')"
+                                class="bg-gray-800 hover:bg-gray-750 text-white rounded-lg p-3 text-lg font-semibold transition active:scale-95">9</button>
+                            <button onclick="pressCalc('*')"
+                                class="bg-brand-orange hover:bg-brand-orange/90 text-white rounded-lg p-3 text-lg font-bold transition active:scale-95">*</button>
+
+                            <button onclick="pressCalc('4')"
+                                class="bg-gray-800 hover:bg-gray-750 text-white rounded-lg p-3 text-lg font-semibold transition active:scale-95">4</button>
+                            <button onclick="pressCalc('5')"
+                                class="bg-gray-800 hover:bg-gray-750 text-white rounded-lg p-3 text-lg font-semibold transition active:scale-95">5</button>
+                            <button onclick="pressCalc('6')"
+                                class="bg-gray-800 hover:bg-gray-750 text-white rounded-lg p-3 text-lg font-semibold transition active:scale-95">6</button>
+                            <button onclick="pressCalc('-')"
+                                class="bg-brand-orange hover:bg-brand-orange/90 text-white rounded-lg p-3 text-lg font-bold transition active:scale-95">-</button>
+
+                            <button onclick="pressCalc('1')"
+                                class="bg-gray-800 hover:bg-gray-750 text-white rounded-lg p-3 text-lg font-semibold transition active:scale-95">1</button>
+                            <button onclick="pressCalc('2')"
+                                class="bg-gray-800 hover:bg-gray-750 text-white rounded-lg p-3 text-lg font-semibold transition active:scale-95">2</button>
+                            <button onclick="pressCalc('3')"
+                                class="bg-gray-800 hover:bg-gray-750 text-white rounded-lg p-3 text-lg font-semibold transition active:scale-95">3</button>
+                            <button onclick="pressCalc('+')"
+                                class="bg-brand-orange hover:bg-brand-orange/90 text-white rounded-lg p-3 text-lg font-bold transition active:scale-95">+</button>
+
+                            <button onclick="pressCalc('0')"
+                                class="bg-gray-800 hover:bg-gray-750 text-white rounded-lg p-3 text-lg font-semibold transition active:scale-95 col-span-2">0</button>
+                            <button onclick="pressCalc('.')"
+                                class="bg-gray-800 hover:bg-gray-750 text-white rounded-lg p-3 text-lg font-semibold transition active:scale-95">.</button>
+                            <button onclick="pressCalc('=')"
+                                class="bg-green-600 hover:bg-green-500 text-white rounded-lg p-3 text-lg font-bold transition active:scale-95">=</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== WINDOW: CONTACT ==================== -->
+                <div id="contact-window" class="app-window rounded-xl overflow-hidden hidden"
+                    style="width: 720px; height: 460px; left: 200px; top: 100px;">
+                    <!-- Header controls -->
+                    <div
+                        class="window-header bg-[#E2E2E2] border-b border-black/10 px-4 py-3 flex justify-between items-center select-none text-brand-charcoal">
+                        <div class="flex items-center gap-1.5 window-controls-desktop">
+                            <button onclick="closeWindow('contact-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#FF5F56] border border-[#E0443E] hover:brightness-90"></button>
+                            <button onclick="minimizeWindow('contact-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] border-[#DEA123] hover:brightness-90"></button>
+                            <button onclick="maximizeWindow('contact-window')"
+                                class="w-3.5 h-3.5 rounded-full bg-[#27C93F] border-[#1AAB29] hover:brightness-90"></button>
+                        </div>
+                        <!-- Mobile Back Button -->
+                        <button onclick="closeWindow('contact-window')"
+                            class="window-controls-mobile hidden flex items-center justify-center text-brand-charcoal">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </button>
+                        <span class="text-sm font-semibold">Contact Sonali Duvesh</span>
+                        <div class="w-8"></div>
+                    </div>
+
+                    <!-- Inner Content split -->
+                    <div class="flex-1 flex overflow-hidden">
+                        <!-- Left: Contact Form -->
+                        <main class="flex-1 bg-white p-6 overflow-y-auto">
+                            <h3 class="text-base font-bold text-brand-aubergine mb-4 flex items-center gap-1.5"><span
+                                    class="material-symbols-outlined">mail</span> Send Message</h3>
+                            <form onsubmit="submitContactForm(event)" class="space-y-4">
+                                <div>
+                                    <label
+                                        class="block text-[10px] uppercase font-bold text-brand-charcoal/50 mb-1">Your
+                                        Name</label>
+                                    <input required
+                                        class="w-full bg-brand-canvasGray border-none border-b-2 border-transparent focus:border-brand-orange focus:ring-0 rounded-lg text-xs py-2 px-3 text-brand-charcoal transition-all"
+                                        type="text" placeholder="Alex Carter" />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-[10px] uppercase font-bold text-brand-charcoal/50 mb-1">Email
+                                        Address</label>
+                                    <input required
+                                        class="w-full bg-brand-canvasGray border-none border-b-2 border-transparent focus:border-brand-orange focus:ring-0 rounded-lg text-xs py-2 px-3 text-brand-charcoal transition-all"
+                                        type="email" placeholder="alex@company.com" />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-[10px] uppercase font-bold text-brand-charcoal/50 mb-1">Message</label>
+                                    <textarea required rows="3"
+                                        class="w-full bg-brand-canvasGray border-none border-b-2 border-transparent focus:border-brand-orange focus:ring-0 rounded-lg text-xs py-2 px-3 text-brand-charcoal transition-all"
+                                        placeholder="Hey Sonali, let's collaborate on..."></textarea>
+                                </div>
+                                <button type="submit"
+                                    class="w-full bg-brand-orange hover:bg-brand-orange/90 text-white font-semibold text-xs py-2 rounded-lg transition active:scale-95 shadow-md">
+                                    Transmit Message
+                                </button>
+                            </form>
+                            <div id="contact-success"
+                                class="hidden mt-3 text-center text-xs text-green-600 font-semibold">
+                                Message transmitted successfully!
+                            </div>
+                        </main>
+
+                        <!-- Right: Details Card (Desktop only) -->
+                        <aside
+                            class="window-sidebar-desktop w-56 bg-brand-canvasGray border-l border-black/10 p-5 flex flex-col select-none text-xs gap-4 shrink-0">
+                            <div>
+                                <h4 class="font-bold text-brand-charcoal uppercase tracking-wider mb-2">Direct Link</h4>
+                                <div class="space-y-2">
+                                    <p class="flex items-center gap-2 text-brand-charcoal/70"><span
+                                            class="material-symbols-outlined text-base text-brand-orange">alternate_email</span>
+                                        sonaliduvesh@gmail.com</p>
+                                    <p class="flex items-center gap-2 text-brand-charcoal/70"><span
+                                            class="material-symbols-outlined text-base text-brand-orange">pin_drop</span>
+                                        IIT Madras, India</p>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <h4 class="font-bold text-brand-charcoal uppercase tracking-wider mb-3">External
+                                    Networks</h4>
+                                <div class="flex flex-col gap-2">
+                                    <a href="https://github.com/SonaliDuvesh" target="_blank"
+                                        class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg border border-black/10 bg-white hover:bg-black/5 text-brand-charcoal font-medium transition select-none">
+                                        <span class="material-symbols-outlined text-base">link</span> GitHub
+                                    </a>
+                                    <a href="https://www.linkedin.com/in/sonali-duvesh/" target="_blank"
+                                        class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg border border-black/10 bg-white hover:bg-black/5 text-brand-charcoal font-medium transition select-none">
+                                        <span class="material-symbols-outlined text-base">link</span> LinkedIn
+                                    </a>
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- ==================== SYSTEM SCRIPTS ==================== -->
+    <script src="script.js" defer></script>
+</body>
+
+</html>
